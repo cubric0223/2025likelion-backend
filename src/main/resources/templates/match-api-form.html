@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>밸런스 게임 API 폼</title>
+</head>
+<body>
+<h2>밸런스 게임</h2>
+
+<div>
+    <label>이름: <input type="text" id="name"></label>
+</div>
+
+<div>
+    <label>성별:
+        <select id="gender">
+            <option value="">-- 선택 --</option>
+            <option value="MALE">남자</option>
+            <option value="FEMALE">여자</option>
+        </select>
+    </label>
+</div>
+
+<div>
+    <label>인스타 ID: <input type="text" id="instarId"></label>
+</div>
+
+<hr>
+
+<div id="questions">
+    <!-- 각 질문 블록 -->
+    <div data-qnum="1" data-text="짜장면 vs 짬뽕">
+        <p>짜장면 vs 짬뽕</p>
+        <label><input type="radio" name="q1" value="FIRST"> 짜장면</label>
+        <label><input type="radio" name="q1" value="SECOND"> 짬뽕</label>
+    </div>
+
+    <div data-qnum="2" data-text="연세대 vs 고려대">
+        <p>연세대 vs 고려대</p>
+        <label><input type="radio" name="q2" value="FIRST"> 연세대</label>
+        <label><input type="radio" name="q2" value="SECOND"> 고려대</label>
+    </div>
+
+    <div data-qnum="3" data-text="고양이 vs 강아지">
+        <p>고양이 vs 강아지</p>
+        <label><input type="radio" name="q3" value="FIRST"> 고양이</label>
+        <label><input type="radio" name="q3" value="SECOND"> 강아지</label>
+    </div>
+
+    <div data-qnum="4" data-text="여름 vs 겨울">
+        <p>여름 vs 겨울</p>
+        <label><input type="radio" name="q4" value="FIRST"> 여름</label>
+        <label><input type="radio" name="q4" value="SECOND"> 겨울</label>
+    </div>
+
+    <div data-qnum="5" data-text="돈 vs 명예">
+        <p>돈 vs 명예</p>
+        <label><input type="radio" name="q5" value="FIRST"> 돈</label>
+        <label><input type="radio" name="q5" value="SECOND"> 명예</label>
+    </div>
+</div>
+
+<button onclick="submitForm()">제출</button>
+
+<script>
+    function submitForm() {
+        const name = document.getElementById("name").value.trim();
+        const gender = document.getElementById("gender").value;
+        const instarId = document.getElementById("instarId").value.trim();
+
+        if (!name || !gender || !instarId) {
+            alert("이름, 성별, 인스타 ID를 모두 입력해주세요.");
+            return;
+        }
+
+        const data = {
+            name,
+            gender,
+            instarId,
+            answers: []
+        };
+
+        for (let i = 1; i <= 5; i++) {
+            const questionEl = document.querySelector(`[data-qnum="${i}"]`);
+            const questionText = questionEl.getAttribute("data-text");
+            const radios = document.getElementsByName(`q${i}`);
+            let selected = [...radios].find(r => r.checked);
+            if (!selected) {
+                alert(`${i}번 질문에 응답하지 않았습니다.`);
+                return;
+            }
+
+            data.answers.push({
+                questionNumber: i,
+                questionText: questionText,
+                choice: selected.value
+            });
+        }
+
+        fetch('/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("서버 오류");
+                return res.text();
+            })
+            .then(msg => {
+                alert("매칭 완료: " + msg);
+                window.location.href = '/success';
+            })
+            .catch(err => {
+                console.error(err);
+                alert("에러 발생! 다시 시도해주세요.");
+            });
+    }
+</script>
+</body>
+</html>

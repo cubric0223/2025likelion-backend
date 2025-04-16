@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 목록</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        ul { list-style-type: disc; padding-left: 20px; text-align: left; }
+    </style>
+</head>
+<body>
+
+<h2>전체 회원 목록</h2>
+<table id="member-table">
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>이름</th>
+        <th>성별</th>
+        <th>인스타 ID</th>
+        <th>답변</th>
+        <th>삭제</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function loadMembers() {
+        const res = await fetch('/members');
+        const members = await res.json();
+        const tbody = document.querySelector('#member-table tbody');
+        tbody.innerHTML = ''; // 초기화
+
+        members.forEach((member, index) => {
+            const row = document.createElement('tr');
+
+            // 번호, 이름, 성별, 인스타
+            row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${member.name}</td>
+        <td>${member.gender}</td>
+        <td>${member.instarId}</td>
+        <td>
+          <ul>
+            ${member.answers.map(a => `<li>Q${a.questionNumber}. (${a.choice})</li>`).join('')}
+          </ul>
+        </td>
+        <td><button onclick="deleteMember(${member.id})">삭제</button></td>
+      `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    async function deleteMember(id) {
+        const confirmed = confirm("정말 삭제하시겠습니까?");
+        if (!confirmed) return;
+
+        const res = await fetch(`/members/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            alert("삭제 완료!");
+            loadMembers();
+        } else {
+            alert("삭제 실패!");
+        }
+    }
+
+    // 초기 로드
+    loadMembers();
+</script>
+
+</body>
+</html>
