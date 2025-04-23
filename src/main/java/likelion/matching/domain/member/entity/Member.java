@@ -16,15 +16,19 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String Name;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(unique = true)
     private String instarId;
+
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status = MemberStatus.READY;
+
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Answer> answers = new ArrayList<>();
 
 }
+
