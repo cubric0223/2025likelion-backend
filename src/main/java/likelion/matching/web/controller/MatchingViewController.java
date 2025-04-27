@@ -11,18 +11,32 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MatchingViewController {
 
-    @GetMapping("/match-form")
-    public String matchFormPage() {
-        return "match-api-form";
-    }
 
-    @GetMapping("/member-list")
+
+//    @GetMapping("/member-list")
+//    public String viewMembersPage() {
+//        return "members";
+//    }
+
+    @GetMapping("/admin/members")
     public String viewMembersPage() {
         return "members";
     }
 
-    @GetMapping("/success")
-    public String successPage() {
-        return "success";
+
+
+    @GetMapping("/admin/matching")
+    public String matching(){
+        return "matching";
+    }
+
+    @GetMapping("/login")
+    public String loginPage(){
+        return "loginForm";
+    }
+
+    @GetMapping("/matching-page")
+    public String matchingResultPage(){
+        return "matching-result";
     }
 }

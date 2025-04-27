@@ -1,4 +1,4 @@
-package likelion.matching.domain.member.entity;
+package likelion.matching.domain.entity;
 
 //이게 밸런스게임
 public enum Choice {

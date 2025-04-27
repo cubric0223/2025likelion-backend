@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>🔐 관리자 대시보드 (답변 상세 포함)</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            vertical-align: top;
+        }
+        pre {
+            margin: 0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<h2>👑 관리자 페이지</h2>
+
+<button onclick="loadMembers()">👥 사용자 목록 조회</button>
+<button onclick="resetDB()">🧨 DB 초기화</button>
+
+<div id="result" style="margin-top: 20px;"></div>
+<div id="members" style="margin-top: 20px;"></div>
+
+<script>
+    async function loadMembers() {
+        const res = await fetch("/admin/memberlist");
+        const data = await res.json();
+
+        if (data.status !== "success") {
+            document.getElementById("result").innerText = data.message;
+            return;
+        }
+
+        let html = `<h3>총 ${data.count}명</h3><table><tr>
+                    <th>ID</th>
+                    <th>인스타ID</th>
+                    <th>성별</th>
+                    <th>상태</th>
+                    <th>답변 내용</th>
+                  </tr>`;
+
+        data.members.forEach(m => {
+            let answerHtml = "<pre>";
+            if (m.answers && m.answers.length > 0) {
+                m.answers.forEach(a => {
+                    answerHtml += `Q${a.questionNumber}: ${a.choice}\n`;
+                });
+            } else {
+                answerHtml += "(답변 없음)";
+            }
+            answerHtml += "</pre>";
+
+            html += `<tr>
+          <td>${m.id}</td>
+          <td>${m.instarId}</td>
+          <td>${m.gender}</td>
+          <td>${m.status}</td>
+          <td>${answerHtml}</td>
+        </tr>`;
+        });
+
+        html += `</table>`;
+        document.getElementById("members").innerHTML = html;
+        document.getElementById("result").innerText = "✅ 사용자 목록을 불러왔습니다.";
+    }
+
+    async function resetDB() {
+        if (!confirm("정말 전체 DB를 초기화하시겠습니까?")) return;
+
+        const res = await fetch("/admin/reset-db", {
+            method: "POST"
+        });
+
+        const data = await res.json();
+        document.getElementById("result").innerText = data.message;
+        document.getElementById("members").innerHTML = "";
+    }
+</script>
+</body>
+</html>

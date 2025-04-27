@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>매칭 결과</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .matched {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4caf50;
+        }
+        .unmatched {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+<div id="result"></div>
+
+<script>
+    fetch('/matching-result')
+        .then(response => response.json())
+        .then(data => {
+            const resultDiv = document.getElementById('result');
+            if (data.matchedInstarId) {
+                resultDiv.innerHTML = `<div class="matched">🎉 당신의 매칭 상대 인스타 ID: <strong>@${data.matchedInstarId}</strong></div>`;
+            } else {
+                resultDiv.innerHTML = `<div class="unmatched">😢 매칭이 아직 안 되었어요 ㅜㅜ</div>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('result').innerHTML = `<div class="unmatched">로그인이 필요합니다.</div>`;
+        });
+</script>
+</body>
+</html>

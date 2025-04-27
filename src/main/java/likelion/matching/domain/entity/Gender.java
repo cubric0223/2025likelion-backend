@@ -1,4 +1,4 @@
-package likelion.matching.domain.member.entity;
+package likelion.matching.domain.entity;
 
 public enum Gender {
     MALE("남자"),FEMALE("여자");

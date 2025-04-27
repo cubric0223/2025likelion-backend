@@ -1,13 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>그냥 메인 화면</title>
+  <title>사용자 전체 흐름 테스트</title>
+  <style>
+    .step { display: none; margin-top: 20px; }
+    .step.active { display: block; }
+    button { margin-top: 10px; }
+  </style>
 </head>
 <body>
-<h2>꽃 샤살라 나옴</h2>
+<h1>💁 사용자 통합 테스트</h1>
 
-<a href="/match-form"> 시작하기 버튼</a>
+<!-- STEP 1: 인스타 ID 입력 -->
+<div id="step1" class="step active">
+  <label>인스타그램 아이디:
+    <input type="text" id="instaId">
+  </label>
+  <br>
+  <button onclick="checkId()">다음</button>
+</div>
 
+<!-- STEP 2: 성별 입력 (신규 유저) -->
+<div id="step2" class="step">
+  <p>신규 유저입니다. 성별을 선택해주세요:</p>
+  <label><input type="radio" name="gender" value="male"> 남자</label>
+  <label><input type="radio" name="gender" value="female"> 여자</label>
+  <br>
+  <button onclick="signup()">회원가입</button>
+</div>
+
+<!-- STEP 3: 답변 제출 -->
+<div id="step3" class="step">
+  <h3>📝 밸런스 게임 답변</h3>
+  <div id="questions">
+    <div><p>1. 짜장면 vs 짬뽕</p>
+      <label><input type="radio" name="q1" value="FIRST"> 짜장면</label>
+      <label><input type="radio" name="q1" value="SECOND"> 짬뽕</label>
+    </div>
+    <div><p>2. 연세대 vs 고려대</p>
+      <label><input type="radio" name="q2" value="FIRST"> 연세대</label>
+      <label><input type="radio" name="q2" value="SECOND"> 고려대</label>
+    </div>
+    <div><p>3. 고양이 vs 강아지</p>
+      <label><input type="radio" name="q3" value="FIRST"> 고양이</label>
+      <label><input type="radio" name="q3" value="SECOND"> 강아지</label>
+    </div>
+    <div><p>4. 여름 vs 겨울</p>
+      <label><input type="radio" name="q4" value="FIRST"> 여름</label>
+      <label><input type="radio" name="q4" value="SECOND"> 겨울</label>
+    </div>
+    <div><p>5. 돈 vs 명예</p>
+      <label><input type="radio" name="q5" value="FIRST"> 돈</label>
+      <label><input type="radio" name="q5" value="SECOND"> 명예</label>
+    </div>
+  </div>
+  <button onclick="submitAnswers()">답변 제출</button>
+</div>
+
+<!-- 결과 출력 -->
+<div id="result" style="margin-top: 30px; color: darkblue;"></div>
+
+<script>
+  function goToStep(step) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+  }
+
+  async function checkId() {
+    const instaId = document.getElementById('instaId').value.trim();
+    if (!instaId) {
+      alert("인스타그램 ID를 입력해주세요.");
+      return;
+    }
+
+    const res = await fetch("/auth/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ instaId })
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.message;
+
+    if (data.status === "done") {
+      goToStep(1); // 이미 제출했으므로 다음 단계 안 감
+      alert("이미 답변을 제출하셨습니다! 감사합니다.");
+    } else if (data.isNewUser) {
+      goToStep(2);
+    } else {
+      goToStep(3); // 기존 유저 → 바로 질문
+    }
+  }
+
+  async function signup() {
+    const gender = document.querySelector('input[name="gender"]:checked')?.value;
+    if (!gender) {
+      alert("성별을 선택해주세요.");
+      return;
+    }
+
+    const res = await fetch("/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gender })
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.message;
+    goToStep(3);
+  }
+
+  async function submitAnswers() {
+    const answers = [];
+    for (let i = 1; i <= 5; i++) {
+      const selected = document.querySelector(`input[name="q${i}"]:checked`);
+      if (!selected) {
+        alert(`${i}번 질문에 응답하지 않았습니다.`);
+        return;
+      }
+      answers.push({ questionNumber: i, choice: selected.value });
+    }
+
+    const res = await fetch("/member/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers })
+    });
+
+    const data = await res.json();
+    document.getElementById("result").innerText = data.message;
+    alert("답변 제출이 완료되었습니다. 18시에 멋사인스타에서 결과 확인 가능!");
+    goToStep(1);
+  }
+</script>
 </body>
 </html>

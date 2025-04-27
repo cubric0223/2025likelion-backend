@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>매칭 시작</title>
+
+</head>
+<body>
+
+<h1>매칭을 시작하시겠습니까?</h1>
+
+<button onclick="startMatching()">매칭 시키기</button>
+
+<script>
+    function startMatching() {
+        fetch('/admin/matching', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    // 매칭 성공 시 members 페이지로 이동
+                    window.location.href = '/admin/members';
+                } else {
+                    alert('매칭에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+                alert('서버 오류로 매칭에 실패했습니다.');
+            });
+    }
+</script>
+
+</body>
+</html>

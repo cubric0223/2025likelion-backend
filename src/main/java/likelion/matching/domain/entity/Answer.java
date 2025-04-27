@@ -1,4 +1,4 @@
-package likelion.matching.domain.member.entity;
+package likelion.matching.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
