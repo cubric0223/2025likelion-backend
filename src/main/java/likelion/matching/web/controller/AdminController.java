@@ -1,9 +1,11 @@
 package likelion.matching.web.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import likelion.matching.domain.service.MatchingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import likelion.matching.domain.entity.Member;
@@ -20,23 +22,23 @@ public class AdminController {
     private final MemberRepository memberRepository;
     private final MatchingService matchingService;
 
-    private boolean isAdmin(HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) return false;
+    private static final String ADMIN_PASSWORD = "123456";
 
-        return memberRepository.findById(memberId)
-                .map(m -> "admin".equalsIgnoreCase(m.getInstarId()))
-                .orElse(false);
+    private boolean checkAdminPassword(HttpServletRequest request) {
+        String password = request.getParameter("password");
+        return ADMIN_PASSWORD.equals(password);
     }
 
+
     @GetMapping("/member-list")
-    public ResponseEntity<?> getAllMembers(HttpSession session) {
-        if (!isAdmin(session)) {
+    public ResponseEntity<?> getAllMembers(HttpServletRequest request) {
+        if (!checkAdminPassword(request)) {
             return ResponseEntity.status(403).body(Map.of(
                     "status", "fail",
-                    "message", "관리자만 접근 가능합니다."
+                    "message", "비밀번호가 틀렸습니다."
             ));
         }
+
 
         List<Member> members = memberRepository.findAll();
         return ResponseEntity.ok(Map.of(
@@ -48,11 +50,11 @@ public class AdminController {
 
     @PostMapping("/reset-db")
     @Transactional
-    public ResponseEntity<?> resetDatabase(HttpSession session) {
-        if (!isAdmin(session)) {
+    public ResponseEntity<?> resetDatabase(HttpServletRequest request) {
+        if (!checkAdminPassword(request)) {
             return ResponseEntity.status(403).body(Map.of(
                     "status", "fail",
-                    "message", "관리자만 접근 가능합니다."
+                    "message", "비밀번호가 틀렸습니다."
             ));
         }
 
@@ -64,7 +66,13 @@ public class AdminController {
     }
 
     @PostMapping("/matching")
-    public ResponseEntity<?> runMatching(){
+    public ResponseEntity<?> runMatching(HttpServletRequest request){
+        if (!checkAdminPassword(request)) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "status", "fail",
+                    "message", "비밀번호가 틀렸습니다."
+            ));
+        }
         matchingService.runMatching();
         return ResponseEntity.ok(Map.of(
                 "status", "success",
