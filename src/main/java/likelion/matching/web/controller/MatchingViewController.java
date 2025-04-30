@@ -23,8 +23,6 @@ public class MatchingViewController {
         return "members";
     }
 
-
-
     @GetMapping("/admin/matching")
     public String matching(){
         return "matching";
@@ -38,5 +36,9 @@ public class MatchingViewController {
     @GetMapping("/matching-page")
     public String matchingResultPage(){
         return "matching-result";
+    }
+    @GetMapping("/admin/reset")
+    public String resetDBPage(){
+        return "reset-db";
     }
 }

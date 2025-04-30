@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>DB 초기화</title>
+</head>
+<body>
+
+<h1>관리자 DB 초기화</h1>
+<button onclick="resetDatabase()">DB 초기화 실행</button>
+
+<script>
+    function resetDatabase() {
+        const password = prompt("관리자 비밀번호를 입력하세요:");
+        if (!password) return;
+
+        fetch(`/admin/reset-db?password=${encodeURIComponent(password)}`, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert(data.message);
+                } else {
+                    alert("실패: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('에러 발생:', error);
+                alert("요청 중 오류가 발생했습니다.");
+            });
+    }
+</script>
+
+</body>
+</html>

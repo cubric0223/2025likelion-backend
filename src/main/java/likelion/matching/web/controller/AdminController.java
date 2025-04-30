@@ -29,7 +29,6 @@ public class AdminController {
         return ADMIN_PASSWORD.equals(password);
     }
 
-
     @GetMapping("/member-list")
     public ResponseEntity<?> getAllMembers(HttpServletRequest request) {
         if (!checkAdminPassword(request)) {
