@@ -1,4 +1,4 @@
-package likelion.matching.web.form;
+package likelion.matching.domain.member.form;
 
 import jakarta.validation.constraints.NotNull;
 import likelion.matching.domain.entity.Choice;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import likelion.matching.domain.entity.Answer;
 import likelion.matching.domain.entity.Member;
 import likelion.matching.domain.repository.MemberRepository;
-import likelion.matching.web.form.AnswerForm;
+import likelion.matching.domain.member.form.AnswerForm;
 
 import java.util.*;
 

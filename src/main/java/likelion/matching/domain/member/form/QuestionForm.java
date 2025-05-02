@@ -1,10 +1,11 @@
-package likelion.matching.web.form;
+package likelion.matching.domain.member.form;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import likelion.matching.domain.entity.Gender;
+import likelion.matching.domain.member.form.AnswerForm;
 import lombok.Data;
 
 import java.util.ArrayList;
