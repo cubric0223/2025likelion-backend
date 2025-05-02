@@ -46,6 +46,24 @@ public class AdminController {
         ));
     }
 
+//    @GetMapping("/member-list")
+//    public ResponseEntity<?> getAllMembers(@RequestParam String password) {
+//        if (!"123456".equals(password)) {
+//            return ResponseEntity.status(403).body(Map.of(
+//                    "status", "fail",
+//                    "message", "비밀번호가 틀렸습니다."
+//            ));
+//        }
+//
+//        List<Member> members = memberRepository.findAll();
+//        return ResponseEntity.ok(Map.of(
+//                "status", "success",
+//                "count", members.size(),
+//                "members", members
+//        ));
+//    }
+
+
     @PostMapping("/reset-db")
     @Transactional
     public ResponseEntity<?> resetDatabase(@RequestParam String password) {

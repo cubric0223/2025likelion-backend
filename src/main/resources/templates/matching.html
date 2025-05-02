@@ -19,7 +19,7 @@
             return;
         }
 
-        fetch(`/admin/matching?password=${encodeURIComponent(password)}`, {
+        fetch(`/api/admin/matching?password=${encodeURIComponent(password)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
