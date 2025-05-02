@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import likelion.matching.domain.entity.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import likelion.matching.domain.entity.Gender;
@@ -65,7 +66,7 @@ public class AuthController {
                         "message", "신규 유저입니다. 성별 정보를 입력해주세요."
                 ));
             }
-        } catch (Exception e) {
+        } catch (Exception e) { 
             // 오류 상세 로깅
             log.error("❌ 인스타 ID 확인 중 오류 발생", e);
             log.error("❌ 상세 오류 메시지: {}", e.getMessage());
