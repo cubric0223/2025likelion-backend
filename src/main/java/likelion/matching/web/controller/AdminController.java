@@ -24,20 +24,19 @@ public class AdminController {
 
     private static final String ADMIN_PASSWORD = "123456";
 
-    private boolean checkAdminPassword(HttpServletRequest request) {
-        String password = request.getParameter("password");
-        return ADMIN_PASSWORD.equals(password);
-    }
+//    private boolean checkAdminPassword(HttpServletRequest request) {
+//        String password = request.getParameter("password");
+//        return ADMIN_PASSWORD.equals(password);
+//    }
 
     @GetMapping("/member-list")
-    public ResponseEntity<?> getAllMembers(HttpServletRequest request) {
-        if (!checkAdminPassword(request)) {
+    public ResponseEntity<?> getAllMembers(@RequestParam String password) {
+        if (!ADMIN_PASSWORD.equals(password)) {
             return ResponseEntity.status(403).body(Map.of(
                     "status", "fail",
                     "message", "비밀번호가 틀렸습니다."
             ));
         }
-
 
         List<Member> members = memberRepository.findAll();
         return ResponseEntity.ok(Map.of(
@@ -49,8 +48,8 @@ public class AdminController {
 
     @PostMapping("/reset-db")
     @Transactional
-    public ResponseEntity<?> resetDatabase(HttpServletRequest request) {
-        if (!checkAdminPassword(request)) {
+    public ResponseEntity<?> resetDatabase(@RequestParam String password) {
+        if (!ADMIN_PASSWORD.equals(password)) {
             return ResponseEntity.status(403).body(Map.of(
                     "status", "fail",
                     "message", "비밀번호가 틀렸습니다."
@@ -65,8 +64,8 @@ public class AdminController {
     }
 
     @PostMapping("/matching")
-    public ResponseEntity<?> runMatching(HttpServletRequest request){
-        if (!checkAdminPassword(request)) {
+    public ResponseEntity<?> runMatching(@RequestParam String password){
+        if (!ADMIN_PASSWORD.equals(password)) {
             return ResponseEntity.status(403).body(Map.of(
                     "status", "fail",
                     "message", "비밀번호가 틀렸습니다."
