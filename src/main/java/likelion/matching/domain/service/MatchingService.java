@@ -80,33 +80,6 @@ public class MatchingService {
             }
         }
 
-        unmatched = new ArrayList<>();
-        for (Member member : members) {
-            if(member.getMatchedMember() == null){
-                unmatched.add(member);
-            }
-        }
-
-        for (int i = 0; i < unmatched.size(); i++) {
-            Member m1 = unmatched.get(i);
-            if(m1.getMatchedMember() != null){
-                continue;
-            }
-            for (int j = i+1; j< unmatched.size();j++){
-                Member m2 = unmatched.get(j);
-                if(m2.getMatchedMember() != null){
-                    continue;
-                }
-
-                //실제로 매칭 시키기
-                if(isMatch(m1,m2,3)){
-                    m1.setMatchedMember(m2);
-                    m2.setMatchedMember(m1);
-                    break;
-                }
-
-            }
-        }
     }
 
     //매칭조건 확인 n은 매칭 숫자
