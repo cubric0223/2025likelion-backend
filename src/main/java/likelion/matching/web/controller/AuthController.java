@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/check")
     public ResponseEntity<?> checkId(@RequestBody Map<String, String> request, HttpSession session) {
-        String instaId = request.get("instaId");
+        String instaId = request.get("instarId");
 
         if (instaId == null || instaId.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of(
