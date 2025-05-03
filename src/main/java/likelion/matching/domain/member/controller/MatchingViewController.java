@@ -41,4 +41,9 @@ public class MatchingViewController {
     public String resetDBPage(){
         return "reset-db";
     }
+
+    @GetMapping(value = {"/", "/{path:^(?!api|assets|static).*$}/**"})
+    public String forward() {
+        return "index";
+    }
 }
