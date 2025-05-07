@@ -22,10 +22,22 @@
             margin-top: 20px;
             text-align: center;
         }
+        #summary {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+
 <h1>회원 목록</h1>
+
+<!-- 요약 정보 영역 -->
+<div id="summary">통계를 불러오는 중...</div>
+
+<!-- 회원 테이블 -->
 <table id="memberTable">
     <thead>
     <tr>
@@ -64,17 +76,30 @@
             })
             .then(data => {
                 if (data.status === 'success') {
+                    const members = data.members;
                     const tbody = document.getElementById('memberTable').querySelector('tbody');
                     tbody.innerHTML = '';
 
-                    data.members.forEach(member => {
+                    let matched = 0;
+                    let male = 0;
+                    let female = 0;
+
+                    members.forEach(member => {
                         const tr = document.createElement('tr');
 
-                        // 답변 매칭하기 (questionNumber 별로)
+                        // 답변 매핑
                         const answersMap = {};
                         (member.answers || []).forEach(answer => {
                             answersMap[answer.questionNumber] = answer.choice;
                         });
+
+                        // 매칭 여부 체크
+                        const matchedId = member.matchedMember ? member.matchedMember.instarId : '-';
+                        if (matchedId !== '-') matched++;
+
+                        // 성별 카운팅
+                        if (member.gender === 'MALE') male++;
+                        else if (member.gender === 'FEMALE') female++;
 
                         tr.innerHTML = `
                             <td>${member.id}</td>
@@ -85,11 +110,17 @@
                             <td>${answersMap[3] || '-'}</td>
                             <td>${answersMap[4] || '-'}</td>
                             <td>${answersMap[5] || '-'}</td>
-                            <td>${member.matchedMember ? member.matchedMember.instarId : '-'}</td>
+                            <td>${matchedId}</td>
                         `;
-
                         tbody.appendChild(tr);
                     });
+
+                    const total = members.length;
+                    const unmatched = total - matched;
+
+                    // 요약 정보 출력
+                    document.getElementById('summary').innerText =
+                        `총 ${total}명 중 매칭 ${matched}명 / 미매칭 ${unmatched}명 | 남자 ${male}명 / 여자 ${female}명`;
                 } else {
                     alert(data.message);
                 }
