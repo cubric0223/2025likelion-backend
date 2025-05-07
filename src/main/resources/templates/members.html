@@ -98,16 +98,20 @@
                     const validMales = validMembers.filter(m => m.gender === 'MALE').length;
                     const validFemales = validMembers.filter(m => m.gender === 'FEMALE').length;
 
-                    const unmatchedValid = validMembers.filter(m => !m.matchedMember).length;
+                    const unmatchedValid = validMembers.filter(m => !m.matchedMember);
+                    const unmatchedCount = unmatchedValid.length;
+                    const unmatchedMales = unmatchedValid.filter(m => m.gender === 'MALE').length;
+                    const unmatchedFemales = unmatchedValid.filter(m => m.gender === 'FEMALE').length;
 
-                    // 통계 요약 표시
+                    // 통계 요약 출력
                     document.getElementById('summary').innerText =
                         `총 응답자 수: ${total}명\n` +
                         `5개 질문 모두 응답한 사람 수: ${validCount}명\n` +
                         `└ 남: ${validMales}명 / 여: ${validFemales}명\n` +
-                        `5개 질문 응답자 중 매칭 안 된 사람: ${unmatchedValid}명`;
+                        `5개 질문 응답자 중 매칭 안 된 사람: ${unmatchedCount}명\n` +
+                        `└ 남: ${unmatchedMales}명 / 여: ${unmatchedFemales}명`;
 
-                    // 테이블 출력
+                    // 테이블 행 렌더링
                     members.forEach(member => {
                         const tr = document.createElement('tr');
                         const answersMap = {};
