@@ -27,6 +27,8 @@
             text-align: center;
             font-size: 16px;
             font-weight: bold;
+            line-height: 1.6;
+            white-space: pre-line; /* 줄바꿈 적용 */
         }
     </style>
 </head>
@@ -80,47 +82,53 @@
                     const tbody = document.getElementById('memberTable').querySelector('tbody');
                     tbody.innerHTML = '';
 
-                    let matched = 0;
-                    let male = 0;
-                    let female = 0;
+                    // 총 응답자 수
+                    const total = members.length;
 
+                    // Q1~Q5에 모두 응답한 사람만 추출
+                    const validMembers = members.filter(member => {
+                        const answersMap = {};
+                        (member.answers || []).forEach(answer => {
+                            answersMap[answer.questionNumber] = answer.choice;
+                        });
+                        return [1, 2, 3, 4, 5].every(q => answersMap[q] === 'FIRST' || answersMap[q] === 'SECOND');
+                    });
+
+                    const validCount = validMembers.length;
+                    const validMales = validMembers.filter(m => m.gender === 'MALE').length;
+                    const validFemales = validMembers.filter(m => m.gender === 'FEMALE').length;
+
+                    const unmatchedValid = validMembers.filter(m => !m.matchedMember).length;
+
+                    // 통계 요약 표시
+                    document.getElementById('summary').innerText =
+                        `총 응답자 수: ${total}명\n` +
+                        `5개 질문 모두 응답한 사람 수: ${validCount}명\n` +
+                        `└ 남: ${validMales}명 / 여: ${validFemales}명\n` +
+                        `5개 질문 응답자 중 매칭 안 된 사람: ${unmatchedValid}명`;
+
+                    // 테이블 출력
                     members.forEach(member => {
                         const tr = document.createElement('tr');
-
-                        // 답변 매핑
                         const answersMap = {};
                         (member.answers || []).forEach(answer => {
                             answersMap[answer.questionNumber] = answer.choice;
                         });
 
-                        // 매칭 여부 체크
-                        const matchedId = member.matchedMember ? member.matchedMember.instarId : '-';
-                        if (matchedId !== '-') matched++;
-
-                        // 성별 카운팅
-                        if (member.gender === 'MALE') male++;
-                        else if (member.gender === 'FEMALE') female++;
-
                         tr.innerHTML = `
-                            <td>${member.id}</td>
-                            <td>${member.instarId}</td>
-                            <td>${member.gender}</td>
-                            <td>${answersMap[1] || '-'}</td>
-                            <td>${answersMap[2] || '-'}</td>
-                            <td>${answersMap[3] || '-'}</td>
-                            <td>${answersMap[4] || '-'}</td>
-                            <td>${answersMap[5] || '-'}</td>
-                            <td>${matchedId}</td>
-                        `;
+              <td>${member.id}</td>
+              <td>${member.instarId}</td>
+              <td>${member.gender}</td>
+              <td>${answersMap[1] || '-'}</td>
+              <td>${answersMap[2] || '-'}</td>
+              <td>${answersMap[3] || '-'}</td>
+              <td>${answersMap[4] || '-'}</td>
+              <td>${answersMap[5] || '-'}</td>
+              <td>${member.matchedMember ? member.matchedMember.instarId : '-'}</td>
+            `;
+
                         tbody.appendChild(tr);
                     });
-
-                    const total = members.length;
-                    const unmatched = total - matched;
-
-                    // 요약 정보 출력
-                    document.getElementById('summary').innerText =
-                        `총 ${total}명 중 매칭 ${matched}명 / 미매칭 ${unmatched}명 | 남자 ${male}명 / 여자 ${female}명`;
                 } else {
                     alert(data.message);
                 }
