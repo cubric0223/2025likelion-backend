@@ -28,7 +28,18 @@
             font-size: 16px;
             font-weight: bold;
             line-height: 1.6;
-            white-space: pre-line; /* 줄바꿈 적용 */
+            white-space: pre-line;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
@@ -36,10 +47,8 @@
 
 <h1>회원 목록</h1>
 
-<!-- 요약 정보 영역 -->
 <div id="summary">통계를 불러오는 중...</div>
 
-<!-- 회원 테이블 -->
 <table id="memberTable">
     <thead>
     <tr>
@@ -52,6 +61,7 @@
         <th>Q4</th>
         <th>Q5</th>
         <th>매칭된 인스타ID</th>
+        <th>삭제</th>
     </tr>
     </thead>
     <tbody>
@@ -82,10 +92,8 @@
                     const tbody = document.getElementById('memberTable').querySelector('tbody');
                     tbody.innerHTML = '';
 
-                    // 총 응답자 수
                     const total = members.length;
 
-                    // Q1~Q5에 모두 응답한 사람만 추출
                     const validMembers = members.filter(member => {
                         const answersMap = {};
                         (member.answers || []).forEach(answer => {
@@ -103,7 +111,6 @@
                     const unmatchedMales = unmatchedValid.filter(m => m.gender === 'MALE').length;
                     const unmatchedFemales = unmatchedValid.filter(m => m.gender === 'FEMALE').length;
 
-                    // 통계 요약 출력
                     document.getElementById('summary').innerText =
                         `총 응답자 수: ${total}명\n` +
                         `5개 질문 모두 응답한 사람 수: ${validCount}명\n` +
@@ -111,7 +118,6 @@
                         `5개 질문 응답자 중 매칭 안 된 사람: ${unmatchedCount}명\n` +
                         `└ 남: ${unmatchedMales}명 / 여: ${unmatchedFemales}명`;
 
-                    // 테이블 행 렌더링
                     members.forEach(member => {
                         const tr = document.createElement('tr');
                         const answersMap = {};
@@ -129,10 +135,37 @@
               <td>${answersMap[4] || '-'}</td>
               <td>${answersMap[5] || '-'}</td>
               <td>${member.matchedMember ? member.matchedMember.instarId : '-'}</td>
+              <td><button class="delete-btn" data-id="${member.id}">삭제</button></td>
             `;
 
                         tbody.appendChild(tr);
                     });
+
+                    // 삭제 버튼 이벤트 등록
+                    document.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const id = button.getAttribute('data-id');
+                            if (confirm('정말 이 멤버를 삭제하시겠습니까?')) {
+                                fetch(`/api/admin/members/${id}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(res => res.json())
+                                    .then(result => {
+                                        if (result.status === 'success') {
+                                            alert('삭제 완료');
+                                            location.reload(); // 새로고침해서 요약 정보 반영
+                                        } else {
+                                            alert(result.message || '삭제 실패');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.error(err);
+                                        alert('서버 오류 발생');
+                                    });
+                            }
+                        });
+                    });
+
                 } else {
                     alert(data.message);
                 }

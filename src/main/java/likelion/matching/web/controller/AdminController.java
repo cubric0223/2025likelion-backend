@@ -95,4 +95,28 @@ public class AdminController {
                 "message", "매칭이 완료 되었습니다!"
         ));
     }
+
+    @Transactional
+    @DeleteMapping("/members/{id}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 멤버를 찾을 수 없습니다."));
+
+        // 만약 매칭된 상대가 있다면 서로 연결 끊기
+        Member matched = member.getMatchedMember();
+        if (matched != null) {
+            matched.setMatchedMember(null); // 상대방도 끊고
+            member.setMatchedMember(null);  // 본인도 끊고
+            memberRepository.save(matched); // 상대방 저장
+        }
+
+        // 본인 삭제
+        memberRepository.delete(member);
+
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "멤버 삭제 완료!"
+        ));
+    }
+
 }
