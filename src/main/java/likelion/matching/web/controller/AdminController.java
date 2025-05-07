@@ -96,6 +96,21 @@ public class AdminController {
         ));
     }
 
+    @PostMapping("/matching3")
+    public ResponseEntity<?> runMatching3(@RequestParam String password){
+        if (!ADMIN_PASSWORD.equals(password)) {
+            return ResponseEntity.status(403).body(Map.of(
+                    "status", "fail",
+                    "message", "비밀번호가 틀렸습니다."
+            ));
+        }
+        matchingService.runMatching3();
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "매칭이 완료 되었습니다!"
+        ));
+    }
+
     @Transactional
     @DeleteMapping("/members/{id}")
     public ResponseEntity<?> deleteMember(@PathVariable Long id) {

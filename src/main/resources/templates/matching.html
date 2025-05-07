@@ -8,10 +8,11 @@
 
 <h1>매칭을 시작하시겠습니까?</h1>
 
-<button onclick="startMatching()">매칭 시키기</button>
+<button onclick="startMatching('/api/admin/matching')">4~5개 일치 매칭</button>
+<button onclick="startMatching('/api/admin/matching3')">3개 일치 매칭</button>
 
 <script>
-    function startMatching() {
+    function startMatching(endpoint) {
         const password = prompt("관리자 비밀번호를 입력하세요");
 
         if (!password) {
@@ -19,7 +20,7 @@
             return;
         }
 
-        fetch(`/api/admin/matching?password=${encodeURIComponent(password)}`, {
+        fetch(`${endpoint}?password=${encodeURIComponent(password)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -28,7 +29,7 @@
             .then(response => {
                 if (response.ok) {
                     alert('매칭 성공!');
-                    window.location.href = '/api/admin/members'; // 이 부분은 필요에 따라 경로 조정
+                    window.location.href = '/api/admin/members'; // 성공 후 목록으로 이동
                 } else {
                     alert('비밀번호가 틀렸거나 매칭에 실패했습니다.');
                 }
